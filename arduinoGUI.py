@@ -72,13 +72,13 @@ def aSharp():
 #--------------------------------------------
 def aboutMsg():
     messagebox.showinfo("À propos",
-    "Projet de Design II(Modélisation), Université Laval, H23")
+    "Projet de Design II (Modélisation), Université Laval, H23")
 #=================================================================
-# Arduino board connected to serial port COM3
-board = Arduino("COM3")
-# set mode of Arduino pins D3 & D5 for PWM
-board.digital[3].mode = PWM
-board.digital[9].mode = PWM
+# # Arduino board connected to serial port COM3
+# board = Arduino("COM3")
+# # set mode of Arduino pins D3 & D5 for PWM
+# board.digital[3].mode = PWM
+# board.digital[9].mode = PWM
 #--------------------------------------------
 # initialize window with title & size
 win = tk.Tk()

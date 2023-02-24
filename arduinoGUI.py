@@ -3,12 +3,23 @@
 #-----------------------------------------------------
 import tkinter as tk
 from tkinter import messagebox, StringVar
-from pyfirmata import Arduino, PWM
-from time import sleep
+import serial
 # global variables==================================================
 deuxiemeHarmoniqueBool = False
 flatDisplay = True
+ledValue = b'L'
+# Setup connection Arduino==========================================
+ser = serial.Serial('COM3', 9800, timeout=1)
 # Functions=========================================================
+def LEDBlink():
+    global ledValue
+    if ledValue == b'L':
+        ser.write(b'H')
+        ledValue = b'H'
+    else:
+        ser.write(b'L')
+        ledValue = b'L'
+#--------------------------------------------
 def deuxiemeHarmonique():
     global deuxiemeHarmoniqueBool
     if deuxiemeHarmoniqueBool:
@@ -74,11 +85,6 @@ def aboutMsg():
     messagebox.showinfo("À propos",
     "Projet de Design II (Modélisation), Université Laval, H23")
 #=================================================================
-# # Arduino board connected to serial port COM3
-# board = Arduino("COM3")
-# # set mode of Arduino pins D3 & D5 for PWM
-# board.digital[3].mode = PWM
-# board.digital[9].mode = PWM
 #--------------------------------------------
 # initialize window with title & size
 win = tk.Tk()
@@ -94,6 +100,9 @@ frequency.grid(column=3, row=2)
 tk.Label(win, textvariable=freqText).grid(column=3, row=1)
 #--------------------------------------------
 # Button widgets
+LEDBtn = tk.Button(win, bd=5, width=6 , bg='red', text="LED", command=LEDBlink)
+LEDBtn.grid(column=5, row=1)
+
 harmoniqueBtn = tk.Button(win, bd=5, width=6 , bg='#89CFF0', text="harmo", command=deuxiemeHarmonique)
 harmoniqueBtn.grid(column=2, row=3)
 

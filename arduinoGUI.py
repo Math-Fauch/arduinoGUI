@@ -1,5 +1,5 @@
 #-----------------------------------------------------
-# GUI to turn ON blue/red LED with brightness control
+# GUI to control the frequency with an arduino
 #-----------------------------------------------------
 import tkinter as tk
 from tkinter import messagebox, StringVar, PhotoImage

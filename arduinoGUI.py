@@ -2,12 +2,13 @@
 # GUI to turn ON blue/red LED with brightness control
 #-----------------------------------------------------
 import tkinter as tk
-from tkinter import messagebox, StringVar
+from tkinter import messagebox, StringVar, PhotoImage
 import serial
 # global variables==================================================
 deuxiemeHarmoniqueBool = False
 flatDisplay = True
 ledValue = b'L'
+servoPos = b'f'
 # Setup connection Arduino==========================================
 ser = serial.Serial('COM3', 9800, timeout=1)
 # Functions=========================================================
@@ -20,17 +21,30 @@ def LEDBlink():
         ser.write(b'L')
         ledValue = b'L'
 #--------------------------------------------
+def partirAsservissement():
+    freqString = frequency.get()
+    freqValue.set(f"{freqString} Hz")
+#--------------------------------------------
+def servoChange():
+    global servoPos
+    if servoPos == b'f':
+        ser.write(b'F')
+        servoPos = b'F'
+    else:
+        ser.write(b'f')
+        servoPos = b'f'
+#--------------------------------------------
 def deuxiemeHarmonique():
     global deuxiemeHarmoniqueBool
     if deuxiemeHarmoniqueBool:
         frequency.configure(from_=90.00, to=120.00)
         frequency.set(90.00)
-        freqText.set("fréquence première harmonique")
+        freqText.set("fréquence\npremière\nharmonique")
         deuxiemeHarmoniqueBool = False
     else:
         frequency.configure(from_=180.00, to=240.00)
         frequency.set(180.00)
-        freqText.set("fréquence deuxième harmonique")
+        freqText.set("fréquence\ndeuxième\nharmonique")
         deuxiemeHarmoniqueBool = True
 #--------------------------------------------
 def changeFlat():
@@ -91,43 +105,56 @@ win = tk.Tk()
 win.title("Archet électronique")
 win.minsize(235,150)
 freqText = StringVar()
-freqText.set("fréquence première harmonique")
+freqText.set("fréquence\npremière\nharmonique")
+freqValue = StringVar()
+freqValue.set("0 Hz")
 #--------------------------------------------
 # Scale widget
-frequency = tk.Scale(win, bd=5, from_=90.00, to=120.00, orient=tk.HORIZONTAL)
-frequency.grid(column=3, row=2)
+frequency = tk.Scale(win, bd=5, resolution=0.01, from_=90.00, to=120.00, length=220, orient=tk.VERTICAL)
+frequency.grid(column=5, row=1, rowspan=5)
 # Label widget
-tk.Label(win, textvariable=freqText).grid(column=3, row=1)
+tk.Label(win, textvariable=freqText).grid(column=3, row=1, rowspan=2)
+tk.Label(win, textvariable=freqValue).grid(column=3, row=3)
 #--------------------------------------------
 # Button widgets
-LEDBtn = tk.Button(win, bd=5, width=6 , bg='red', text="LED", command=LEDBlink)
-LEDBtn.grid(column=5, row=1)
+img = PhotoImage(file=r"C:\Users\Mathieu\Documents\arduino_designII\GUI\logo.png")
+img1 = img.subsample(6, 7)
+tk.Label(win, image=img1).grid(column=3, row=4, rowspan=2)
 
-harmoniqueBtn = tk.Button(win, bd=5, width=6 , bg='#89CFF0', text="harmo", command=deuxiemeHarmonique)
-harmoniqueBtn.grid(column=2, row=3)
+LEDBtn = tk.Button(win, bd=10, padx=5, pady=5, width=6 , bg='red', text="LED", command=LEDBlink)
+LEDBtn.grid(column=9, row=1)
 
-flatSharpBtn = tk.Button(win, bd=5, width=6 ,bg='#89CFF0', text="♯/♭", command=changeFlat)
-flatSharpBtn.grid(column=4, row=3)
+servoBtn = tk.Button(win, bd=10, padx=5, pady=5, width=6 , bg='red', text="servo", command=servoChange)
+servoBtn.grid(column=9, row=2)
 
-FSharpBtn = tk.Button(win, bd=5, width=6, bg='yellow', text="F♯", command=fSharp)
-FSharpBtn.grid(column=1, row=4)
+harmoniqueBtn = tk.Button(win, bd=10, padx=5, pady=5, width=6 , bg='#89CFF0', text="harmo", command=deuxiemeHarmonique)
+harmoniqueBtn.grid(column=1, row=3)
 
-gBtn = tk.Button(win, bd=5, width=6, bg='yellow', text="G", command=g)
-gBtn.grid(column=2, row=4)
+flatSharpBtn = tk.Button(win, bd=10, padx=5, pady=5, width=6 ,bg='#89CFF0', text="♯/♭", command=changeFlat)
+flatSharpBtn.grid(column=1, row=4)
 
-gSharpBtn = tk.Button(win, bd=5, width=6, bg='yellow', text="G♯", command=gSharp)
-gSharpBtn.grid(column=3, row=4)
+FSharpBtn = tk.Button(win, bd=10, padx=5, pady=5, width=6, bg='yellow', text="F♯", command=fSharp)
+FSharpBtn.grid(column=2, row=1)
 
-aBtn = tk.Button(win, bd=5, width=6, bg='yellow', text="A", command=a)
-aBtn.grid(column=4, row=4)
+gBtn = tk.Button(win, bd=10, padx=5, pady=5, width=6, bg='yellow', text="G", command=g)
+gBtn.grid(column=2, row=2)
 
-aSharpBtn = tk.Button(win, bd=5, width=6, bg='yellow', text="A♯", command=aSharp)
-aSharpBtn.grid(column=5, row=4)
+gSharpBtn = tk.Button(win, bd=10, padx=5, pady=5, width=6, bg='yellow', text="G♯", command=gSharp)
+gSharpBtn.grid(column=2, row=3)
 
-aboutBtn = tk.Button(win, width=6, text="À propos", command=aboutMsg)
-aboutBtn.grid(column=2, row=5)
+aBtn = tk.Button(win, bd=10, padx=5, pady=5, width=6, bg='yellow', text="A", command=a)
+aBtn.grid(column=2, row=4)
 
-quitBtn = tk.Button(win, width=6, text="Quit", command=win.quit)
-quitBtn.grid(column=4, row=5)
+aSharpBtn = tk.Button(win, bd=10, padx=5, pady=5, width=6, bg='yellow', text="A♯", command=aSharp)
+aSharpBtn.grid(column=2, row=5)
+
+aboutBtn = tk.Button(win, bd=10, padx=5, pady=5, width=6, bg='white', text="À propos", command=aboutMsg)
+aboutBtn.grid(column=1, row=2)
+
+# quitBtn = tk.Button(win, bd=5, width=6, bg='white', text="Quit", command=win.quit)
+# quitBtn.grid(column=1, row=1)
+
+startBtn = tk.Button(win, bd=10, padx=5, pady=5, width=6, bg='green', text="Partir", command=partirAsservissement)
+startBtn.grid(column=1, row=5)
 #--------------------------------------------
 win.mainloop()

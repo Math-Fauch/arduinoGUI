@@ -5,5 +5,5 @@ pip install tkinter
 ```
 
 ```
-pip install serial
+pip install pyserial
 ```

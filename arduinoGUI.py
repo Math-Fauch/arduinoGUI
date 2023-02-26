@@ -10,7 +10,7 @@ flatDisplay = True
 ledValue = b'L'
 servoPos = b'f'
 # Setup connection Arduino==========================================
-ser = serial.Serial('COM3', 9800, timeout=1)
+# ser = serial.Serial('COM3', 9800, timeout=1)
 # Functions=========================================================
 def LEDBlink():
     global ledValue
@@ -117,7 +117,7 @@ tk.Label(win, textvariable=freqText).grid(column=3, row=1, rowspan=2)
 tk.Label(win, textvariable=freqValue).grid(column=3, row=3)
 #--------------------------------------------
 # Button widgets
-img = PhotoImage(file=r"C:\Users\Mathieu\Documents\arduino_designII\GUI\logo.png")
+img = PhotoImage(file=r"logo.png")
 img1 = img.subsample(6, 7)
 tk.Label(win, image=img1).grid(column=3, row=4, rowspan=2)
 

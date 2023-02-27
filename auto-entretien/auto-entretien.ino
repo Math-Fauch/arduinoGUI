@@ -18,11 +18,7 @@ void loop() {
     count = 1000000 / pulseTotal; // Frequency in Hertz (Hz)
     while (count == 0 && lastCount != 0){
         // jouer lastCount sur l'actionneur
-        tone(actionneurPin, lastCount);
-        pulseHigh = pulseIn(capteurPin, HIGH);
-        pulseLow = pulseIn(capteurPin, LOW);
-        pulseTotal = pulseHigh + pulseLow; // Time period of the pulse in microseconds
-        count = 1000000 / pulseTotal; // Frequency in Hertz (Hz)
+        tone(actionneurPin, lastCount, 3000);
     }
     lastCount = count;
 }

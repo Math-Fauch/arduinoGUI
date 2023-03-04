@@ -1,40 +1,84 @@
+#include <Servo.h>
+
 const int capteurPin = 13;
-const int actionneurPin = 9;
-int pulseHigh; // Integer variable to capture High time of the incoming pulse
-int pulseLow; // Integer variable to capture Low time of the incoming pulse
-float pulseTotal; // Float variable to capture Total time of the incoming pulse
-float count; // Calculated Frequency
-float freqStart = 90;
+const int accordServoPin = 9;
+const int harmo1ServoPin = 3;
+const int harmo2ServoPin = 4;
+
+float desiredFrequency = 105;
+
+bool servo1Up = true;
+
+Servo accordServo;
+Servo harmo1Servo;
+Servo harmo2Servo;
+
+int accordPos = 90;
 
 void setup() {
   pinMode(capteurPin, INPUT);
-  pinMode(actionneurPin, OUTPUT);
+  pinMode(5, INPUT);
+  accordServo.attach(accordServoPin);
+  harmo1Servo.attach(harmo1ServoPin);
+  harmo2Servo.attach(harmo2ServoPin);
   Serial.begin(57600);
   delay(1000);
-  Serial.flush();
-  Serial.println("début de la com");
-  Serial.print("count = ");
-  Serial.println(count);
+  harmo1Servo.write(5);
+  harmo2Servo.write(90);
+  accordServo.write(accordPos);
+  delay(1000);
 }
 
 void loop() {
-    Serial.write("\n");
-    pulseHigh = pulseIn(capteurPin, HIGH);
-    pulseLow = pulseIn(capteurPin, LOW);
-    pulseTotal = pulseHigh + pulseLow; // Time period of the pulse in microseconds
-    count = 1000000 / pulseTotal; // Frequency in Hertz (Hz)
-    Serial.print("count: ");
-    Serial.println(count);
-    if (isinf(count)){
-      Serial.println("plus de vibrations");
-      tone(actionneurPin, freqStart);
-      delay(2000);
-      noTone(actionneurPin);
-      if (freqStart > 119){
-        freqStart = 90;
-      } else {
-        freqStart += 2.5;
-      }
+    float frequency = calculateFrequency();
+    Serial.println(frequency);
+    autoEntretien(frequency);
+    while (calculateFrequency() < desiredFrequency - 1.){
+        autoEntretien(frequency);
+        accordPos += 1;
+        accordServo.write(accordPos);
+        delay(100);
+    }
+    while (calculateFrequency() > desiredFrequency + 1.){
+        autoEntretien(frequency);
+        accordPos -= 1;
+        accordServo.write(accordPos);
+        delay(100);
     }
     delay(1000);
+}
+
+// ===========================================================
+// Fonctions =================================================
+// ===========================================================
+
+void autoEntretien(float frequency) {
+    if (digitalRead(5)){
+        harmo2Servo.write(111);
+    } else {
+      harmo2Servo.write(90);
+    }
+    while (isinf(frequency) || frequency == 0){
+        // Serial.println(frequency);
+        if (servo1Up){
+          harmo1Servo.write(85);
+          servo1Up = false;
+        } else {
+          harmo1Servo.write(5);
+          servo1Up = true;
+        }
+        frequency = calculateFrequency();
+        delay(200);
+    }
+}
+
+float calculateFrequency() {
+    int pulseHigh = pulseIn(capteurPin, HIGH);
+    int pulseLow = pulseIn(capteurPin, LOW);
+    float pulseTotal = pulseHigh + pulseLow; // Time period of the pulse in microseconds
+    float count = 1000000 / pulseTotal;
+    if (digitalRead(5)){
+        count = count/2;
+    }
+    return count;
 }

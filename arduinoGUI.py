@@ -12,20 +12,15 @@ testUIBool = False
 ledValue = b'L'
 servoPos = b'f'
 # Setup connection Arduino==========================================
-# ser = serial.Serial('COM4', 9800, timeout=1)
+ser = serial.Serial('COM7', 9800, timeout=1)
 # Functions=========================================================
-# def LEDBlink():
-#     global ledValue
-#     if ledValue == b'L':
-#         ser.write(b'H')
-#         ledValue = b'H'
-#     else:
-#         ser.write(b'L')
-#         ledValue = b'L'
+def LEDBlink():
+    while ser.read() != b"o":
+        ser.write(str(frequency.get()).encode())
 #--------------------------------------------
 def partirAsservissement():
+    global testUIBool
     if testUIBool:
-        print("hi")
         times = np.empty([5])
         # test f#
         accordText.set("F♯")
@@ -215,8 +210,8 @@ tk.Label(win, image=img1).grid(column=3, row=4, rowspan=2, columnspan=2)
 
 # Button widgets
 # ----------------------- ARDUINO TEST  -----------------------------------------------------------------
-# LEDBtn = tk.Button(win, bd=10, padx=5, pady=5, width=6 , bg='red', text="LED", command=LEDBlink)
-# LEDBtn.grid(column=9, row=1)
+LEDBtn = tk.Button(win, bd=10, padx=5, pady=5, width=6 , bg='red', text="LED", command=LEDBlink)
+LEDBtn.grid(column=9, row=1)
 
 # servoBtn = tk.Button(win, bd=10, padx=5, pady=5, width=6 , bg='red', text="servo", command=servoChange)
 # servoBtn.grid(column=9, row=2)
